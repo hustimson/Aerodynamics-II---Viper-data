@@ -1,0 +1,14 @@
+# Initialize the solver for time integration
+init
+
+# Begin time stepping (stop when a steady state is reached)
+stopcrit 1e-11
+step 1000000000
+
+# Save the current state of the solution to a binary Viper restart file 
+tecp -t -f Re1.dat
+
+
+# Quit
+stop
+
