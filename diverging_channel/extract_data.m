@@ -3,7 +3,6 @@ function [headers_array, data] = extract_data(filepath)
 % and returns the data in a usable matrix format
 %
 %
-%
 
 fileID = fopen(filepath);
 
