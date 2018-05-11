@@ -8,37 +8,41 @@ function [ output ] = slice_data(data, slice_col, slice_vals)
 %
 %
 % input/output format: cell array with format:
-% {[x_col], [y_col], [u_col], [v_col], [p_col]}
+%{[x_col], [y_col], [u_col], [v_col], [p_col]} % at slice value 1
+%{[x_col], [y_col], [u_col], [v_col], [p_col]} % at slice value 2
+
 
 
 n_vars = size(data);
 n_vars = n_vars(2);
-sliced_cell = cell(1,n_vars);
-
 n_slices = length(slice_vals);
 
+sliced_cell = cell(n_slices,n_vars);
 
-slice = zeros(length(data{1}),1);
+
 
 %% Find the rows
 % find indices of the rows which have a member of slice_vals in their slice_col
 
-for element = slice_vals
-	 %Finding the values in column X
-	next_slice = data{slice_col}(:)==element;
+for i = 1:n_slices
+	slice_val = slice_vals(i);
+	
+	 %Finding the values in column slice_col
+	slice = data{slice_col}(:)== slice_val;
 	
 	%creates a logical column vector with 1 at the indices of values that
 	%satisfy the condition
-	slice = slice + next_slice;
+	
+	for j = 1:n_vars
+		sliced_cell{i,j} = data{j}(slice);
+	end
+
 end
 
-slice = logical(slice);
+
 
 
 %% Extract the rows at indices found above
-for i = 1:n_vars
-	sliced_cell{i} = data{i}(slice);
-end
 
 
 
