@@ -1,10 +1,21 @@
-clear all;
-close all;
-clc;
-%% Import data
-file_path = 'Re1.dat.dat';
+function [ output ] = slice_data(data, slice_col, slice_vals)
+% function takes input data and returns a cell array with sme columns but
+% only rows with values: slice_vals in column: slice_col
+%
+% example: all row where the x value is one of the elements in [0:1:10]
+%
+%
+%
+% data input format: [ x y u v p ]
+%                    [ x y u v p ]
+%                    [ x y u v p ]
+%
+% output format: cell array with format [x_col],[y_col],[u_col],[v_col],[p_col]
 
-[variables, data] = extract_data(file_path);
+
+
+%% slicing data
+
 
 n_vars = length(variables);
 
@@ -58,31 +69,4 @@ for i = 1:n_slices
 	
 end
 
-
-%% DO something with the data
-figure
-hold on
-set(gca,'XAxisLocation','origin')
-daspect([1 0.5 1])
-plot(values,upper_boundary,'k')
-plot(values,lower_boundary,'k')
-
-
-for j = 1:n_slices
-	this_slice = vertical_slices{j};
-	x = this_slice(:,1);
-	y = this_slice(:,2);
-	u = this_slice(:,3);
-	v = this_slice(:,4);
-	p = this_slice(:,5);
-	
-	quiver(x,y,u/4,v,'b','MaxHeadSize',0.1,'AutoScale', 'off')
-	
-	plot(x+u/4,y,'r')
-	plot(x,y ,'b')
-	hold on
 end
-
-
-%%%%%%%% Should try streamslice function on full data set
-
