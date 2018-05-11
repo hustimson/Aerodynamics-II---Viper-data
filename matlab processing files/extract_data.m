@@ -1,11 +1,10 @@
 function [headers_array, data] = extract_data(filepath)
 % Takes a *.dat file output by flow analysis tool Viper
-% and returns the data in a usable matrix format
+% and returns the data in a usable cell array format
 %
-%
+%format of data output: {[x],[y],[u],[v],[p],[]} 
 
 fileID = fopen(filepath);
-
 
 %% Get the headers out
 headers_array = cell(3,1);
@@ -14,17 +13,16 @@ for i = 1:3
 	line = fgetl(fileID);
 	headers_array{i} = line;
 end
-%Extracting variable names
+%Extracting variable names %%%%%%%%%%%%%%%%% make this happen
 %variables = headers_array{2};
 %quote_indices = variables=='"';
 
-variables = [ "X", "Y","U", "V","P", "vort_xy_plane"];
+variables = [ "X", "Y","U", "V","P"];
 num_vars = length(variables);
 
 %% Processing the data
 
 var_index = 1;
-%big_array = zeros(13369, num_vars);
 big_array = cell(1, num_vars);
 
 start_index = 1;
@@ -41,7 +39,7 @@ while var_index <= num_vars
 	end_index = start_index + line_length - 1;
 	
 	%insert new values at the bottom of the relevant column
-	big_array{var_index}(start_index:end_index,var_index) = line;
+	big_array{var_index}(start_index:end_index,1) = line;
 	
 	start_index = end_index;
 	

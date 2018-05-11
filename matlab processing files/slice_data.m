@@ -11,15 +11,14 @@ function [ output ] = slice_data(data, slice_col, slice_vals)
 % {[x_col], [y_col], [u_col], [v_col], [p_col]}
 
 
-
 n_vars = size(data);
-n_vars = n_vars(1);
+n_vars = n_vars(2);
 sliced_cell = cell(1,n_vars);
 
 n_slices = length(slice_vals);
 
 
-slice = zeros(length(data(:,1)),1);
+slice = zeros(length(data{1}),1);
 
 %% Find the rows
 % find indices of the rows which have a member of slice_vals in their slice_col
@@ -41,6 +40,11 @@ for i = 1:n_vars
 	sliced_cell{i} = data{i}(slice);
 end
 
+
+
+
+
+%%
 %{
 upper_boundary = zeros(n_slices,1);
 lower_boundary = upper_boundary;
@@ -71,5 +75,5 @@ for i = 1:n_slices
 end
 %}
 
-output = sliced_cell
+output = sliced_cell;
 end
