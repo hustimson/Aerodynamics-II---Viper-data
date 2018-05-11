@@ -1,7 +1,7 @@
 % Plotting Data from viper CFD simulations
 
 %% Import data
-file_path = 'Re1.dat.dat';
+file_path = 'output .dat files\diverging\Re1.dat';
 
 [variables, data] = extract_data(file_path);
 

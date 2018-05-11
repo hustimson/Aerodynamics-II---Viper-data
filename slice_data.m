@@ -1,47 +1,47 @@
 function [ output ] = slice_data(data, slice_col, slice_vals)
-% function takes input data and returns a cell array with sme columns but
+% function takes input data and returns a cell array with same columns but
 % only rows with values: slice_vals in column: slice_col
 %
+% because we don't want every point as it would clutter the analysis
+
 % example: all row where the x value is one of the elements in [0:1:10]
 %
 %
-%
-% data input format: [ x y u v p ]
-%                    [ x y u v p ]
-%                    [ x y u v p ]
-%
-% output format: cell array with format [x_col],[y_col],[u_col],[v_col],[p_col]
+% input/output format: cell array with format:
+% {[x_col], [y_col], [u_col], [v_col], [p_col]}
 
 
-% blah vlah vlah
 
-%% slicing data
+n_vars = size(data);
+n_vars = n_vars(1);
+sliced_cell = cell(1,n_vars);
 
+n_slices = length(slice_vals);
 
-n_vars = length(variables);
-
-%% Slice the data
-% because we don't want every point as it would clutter the analysis
-
-values = 0:1:10; %Values we want
-n_slices = length(values);
-column = 1; %Column we want them out of
 
 slice = zeros(length(data(:,1)),1);
 
-%do an x slice
-for element = values
-	next_slice = data(:,column)==element; %Finding the values in column X
+%% Find the rows
+% find indices of the rows which have a member of slice_vals in their slice_col
+
+for element = slice_vals
+	 %Finding the values in column X
+	next_slice = data{slice_col}(:)==element;
+	
+	%creates a logical column vector with 1 at the indices of values that
+	%satisfy the condition
 	slice = slice + next_slice;
 end
+
 slice = logical(slice);
-X = data(slice,1);
-Y = data(slice,2);
-U = data(slice,3);
-V = data(slice,4);
-P = data(slice,5);
 
 
+%% Extract the rows at indices found above
+for i = 1:n_vars
+	sliced_cell{i} = data{i}(slice);
+end
+
+%{
 upper_boundary = zeros(n_slices,1);
 lower_boundary = upper_boundary;
 vertical_slices = cell(n_slices,1);
@@ -69,5 +69,7 @@ for i = 1:n_slices
 	
 	
 end
+%}
 
+output = sliced_cell
 end

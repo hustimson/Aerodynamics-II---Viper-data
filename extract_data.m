@@ -24,7 +24,9 @@ num_vars = length(variables);
 %% Processing the data
 
 var_index = 1;
-big_array = zeros(13369, num_vars);
+%big_array = zeros(13369, num_vars);
+big_array = cell(1, num_vars);
+
 start_index = 1;
 
 
@@ -39,7 +41,7 @@ while var_index <= num_vars
 	end_index = start_index + line_length - 1;
 	
 	%insert new values at the bottom of the relevant column
-	big_array(start_index:end_index,var_index) = line;
+	big_array{var_index}(start_index:end_index,var_index) = line;
 	
 	start_index = end_index;
 	
