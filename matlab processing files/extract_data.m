@@ -2,7 +2,7 @@ function [headers_array, data] = extract_data(filepath)
 % Takes a *.dat file output by flow analysis tool Viper
 % and returns the data in a usable cell array format
 %
-%format of data output: {[x],[y],[u],[v],[p],[]} 
+%format of data output: {[x],[y],[u],[v],[p]} 
 
 fileID = fopen(filepath);
 
@@ -13,6 +13,7 @@ for i = 1:3
 	line = fgetl(fileID);
 	headers_array{i} = line;
 end
+
 %Extracting variable names %%%%%%%%%%%%%%%%% make this happen
 %variables = headers_array{2};
 %quote_indices = variables=='"';
@@ -21,12 +22,10 @@ variables = [ "X", "Y","U", "V","P"];
 num_vars = length(variables);
 
 %% Processing the data
-
 var_index = 1;
 big_array = cell(1, num_vars);
 
 start_index = 1;
-
 
 while var_index <= num_vars 
 	%read in the next line of code and turn into a column vector
@@ -48,8 +47,6 @@ while var_index <= num_vars
 		var_index = var_index + 1;
 		start_index = 1;
 	end
-	
-	
 end
 
 %write final output

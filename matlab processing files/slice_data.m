@@ -19,11 +19,12 @@ n_slices = length(slice_vals);
 sliced_cell = cell(n_slices,n_vars);
 
 
+
 for i = 1:n_slices
 	slice_val = slice_vals(i);
 	
 	% find indices of the rows which have a member of slice_vals in their slice_col
-	slice = data{slice_col}(:)== slice_val;
+	slice = data{slice_col}(:) == slice_val;
 	%creates a logical column vector with 1 at the indices of values that
 	%satisfy the condition
 	
