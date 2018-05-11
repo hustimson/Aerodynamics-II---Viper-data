@@ -41,13 +41,13 @@ lower_BL = upper_wall;
 
 
 for i = 1:n_slices
-	this_slice = sliced_data(i,:);
+	x_slice = sliced_data(i,:);
 	
-	x = cell2mat(this_slice(1));
-	y = cell2mat(this_slice(2));
-	u = cell2mat(this_slice(3));
-	v = cell2mat(this_slice(4));
-	p = cell2mat(this_slice(5));
+	x = cell2mat(x_slice(1));
+	y = cell2mat(x_slice(2));
+	u = cell2mat(x_slice(3));
+	v = cell2mat(x_slice(4));
+	p = cell2mat(x_slice(5));
 	
 	upper_wall(i) = max(y);
 	lower_wall(i) = min(y);
@@ -90,21 +90,48 @@ plot(slice_vals, lower_BL,'m')
 %% Span-wise analysis 
 %Loop through each slice
 for j = 1:n_slices-1
-	this_slice = sliced_data(j,:);
+	x_slice = sliced_data(j,:);
 	
 	
-	x = cell2mat(this_slice(1));
-	y = cell2mat(this_slice(2));
-	u = cell2mat(this_slice(3));
-	v = cell2mat(this_slice(4));
-	p = cell2mat(this_slice(5));
+	x = cell2mat(x_slice(1));
+	y = cell2mat(x_slice(2));
+	u = cell2mat(x_slice(3));
+	v = cell2mat(x_slice(4));
+	p = cell2mat(x_slice(5));
 	
 	
 	%Plotting velocity profile
-	quiver(x,y,u/4,zeros(size(u)),'b','MaxHeadSize',0.1,'AutoScale', 'off')
  	plot(x+u/4,y,'r')
 	plot(x,y ,'b')
+	quiver(x,y,u/4,zeros(size(u)),'b','MaxHeadSize',0.1,'AutoScale', 'off')
+		
+	% 2 axis slicing section
+	%{
+	% re slice in the y direction
+	n_y_slices = 30;
+	y_slices = slice_data(x_slice,2,{[1,length(x_slice{1})], n_y_slices});
+
+	
+	
+	for k = 1:n_y_slices-1
+		y_slice = y_slices(k,:);
+		
+		x = cell2mat(y_slice(1));
+		y = cell2mat(y_slice(2));
+		u = cell2mat(y_slice(3));
+		v = cell2mat(y_slice(4));
+		p = cell2mat(y_slice(5));
+		
+		%Plotting velocity profile
+		quiver(x,y,u/4,zeros(size(u)),'b','MaxHeadSize',0.1,'AutoScale', 'off')
+		
+	end
+	%}
+	
 end
+
+	
+
 
 %}
 %%%%%%%% Should try streamslice function on full data set
