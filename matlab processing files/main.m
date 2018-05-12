@@ -2,13 +2,18 @@
 close all; clc
 
 
+%%%%%%%%%%%%%%%%%%%%% to do next:
+%    - Higher resolution BL profile
+%    - centerline pressure in stacked subplot
+%    - full pressure plot (using delaunay triangles or whatever)
+
 %% Import data
 
 
-%allow user to choose a .dat file to analyse, or for ease of debug use a
+%allow user to choose a .dat file to analyse, or for ease of debug, use a
 %pre-entered file
 
-choose = 0;
+choose = 1;
 if choose
 	[file_name, file_path] = uigetfile('..\output .dat files\.dat');
 	file_path = [file_path, file_name];
@@ -30,6 +35,7 @@ n_slices = length(slice_vals);
 slice_col = 1; %slice by x values
 sliced_data = slice_data(data, slice_col, slice_vals);
 
+high_res_x_slice = slice_data(data, 1, {[0:end], 100})
 
 %% Flow-wise quantity extraction
 
@@ -53,7 +59,7 @@ for i = 1:n_slices
 	lower_wall(i) = min(y);
 	
 	%find greatest u velocity less than 0.2 away from duct centre
-	centre_velocity = max(u(abs(y)<0.05)); 
+	centre_velocity = u(floor(end/2));%max(u(abs(y)<0.05)); 
 	
 	%slide in from the edge of the duct until the first value that is
 	%at least 99% of the centre velocity
@@ -75,13 +81,14 @@ figure
 hold on
 set(gca,'XAxisLocation','origin')
 set(gca,'Visible','off')
-title(file_string, 'Interpreter', 'none')
+
 %daspect([1 0.5 1])
 plot(slice_vals,upper_wall,'k')
 plot(slice_vals,lower_wall,'k')
 [y_corner, x_corner] = max(upper_wall); 
 fill([slice_vals, abs(11-x_corner)],[lower_wall; -y_corner],[0.5 0.5 0.5]);
 fill([slice_vals, abs(11-x_corner)],[upper_wall;  y_corner],[0.5 0.5 0.5]);
+text(4,y_corner-0.1,file_string, 'Interpreter', 'none')
 
 plot(slice_vals, upper_BL,'m')
 plot(slice_vals, lower_BL,'m')
@@ -130,7 +137,13 @@ for j = 1:n_slices-1
 	
 end
 
-	
+
+%% pressure plotting
+
+
+% figure
+% image(data{1},data{2},data{5})
+
 
 
 %}
