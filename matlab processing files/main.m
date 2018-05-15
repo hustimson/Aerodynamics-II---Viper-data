@@ -35,10 +35,22 @@ n_slices = length(slice_vals);
 slice_col = 1; %slice by x values
 sliced_data = slice_data(data, slice_col, slice_vals);
 
-high_res_x_slice = slice_data(data, 1, {[0:end], 100})
+n_high_res = 100
+high_res_x_slice = slice_data(data, 1, {[1 13369], 5})
 
 %% Flow-wise quantity extraction
+%%%%%%%%%%%%%%%% high res section
+%{
+for h = i:n_high_res
+	disp(high_res_x_slice(h,:))
+% 	plot(high_res_x_slice(h,1),high_res_x_slice(h,2));
+% 	hold on
+end
+%}
 
+
+
+%%%%%%%%%%%% low res section
 upper_wall = zeros(n_slices,1);
 lower_wall = upper_wall;
 
