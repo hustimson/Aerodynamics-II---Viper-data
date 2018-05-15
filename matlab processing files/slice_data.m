@@ -1,4 +1,4 @@
-function [ output ] = slice_data(data, slice_col, slice_vals)
+function [ output,slice_vals ] = slice_data(data, slice_col, slice_vals)
 % function takes input data and returns a cell array with same columns but
 % only rows with values: slice_vals in column: slice_col
 %
@@ -6,7 +6,7 @@ function [ output ] = slice_data(data, slice_col, slice_vals)
 %
 % if slice_vals is a vector, find exact values
 % otherwise slice_vals should be a cell where the first element is the
-% range of indices the slice desired, and the second element is the number of
+% range of values the slice desired, and the second element is the number of
 % points desired in the range
 
 
@@ -50,26 +50,39 @@ else
 	if isa(slice_vals, 'cell')
 		
 	n_slices = slice_vals{2};
-	sliced_cell = cell(n_slices,n_vars);
-		
-	bottom = slice_vals{1}(1);
-	top = slice_vals{1}(2);
-	range = top-bottom;
 	
-	indices = round(linspace(bottom,top,n_slices));
-	slice_logical = zeros(range,1);
-	slice_logical(indices) = 1;
 	
-	for i = 1:n_slices
-		for j = 1:n_vars
-			temp_range = data{j}(bottom:top);
-			
-			sliced_cell{i,j} = temp_range(logical(slice_logical));
+	% find unique values in the desired slice column
+	unique_vals = [];
+	for z = 1:length(data{1})
+		if not(ismember(data{slice_col}(z),unique_vals))
+			unique_vals = [unique_vals, data{slice_col}(z)];
 		end
 	end
 	
+	
+	% Work out the values at which to take the slice
+	[~, bottom_index] = min(abs(unique_vals - slice_vals{1}(1)));
+	[~, top_index]    = min(abs(unique_vals - slice_vals{1}(2)));
+	
+	bottom = unique_vals(bottom_index);
+	top = unique_vals(top_index);
+	
+	new_points = linspace(bottom,top,n_slices);
+	
+	% work out exact points that do exist to be fed into the exact part of the function
+	closest_points = zeros(size(new_points));
+	for i = 1:length(closest_points)
+		target_point = new_points(i);
+		[~, closest_point_index] = min(abs(unique_vals - target_point));
+		closest_points(i) = unique_vals(closest_point_index);
+	end
+	
+	% re call the function with exact vals
+	sliced_cell = slice_data(data, slice_col, closest_points);
+	slice_vals  = closest_points;
 	end
 end
-	
+
 output = sliced_cell;
 end
