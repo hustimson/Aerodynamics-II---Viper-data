@@ -3,9 +3,9 @@ close all; clc
 
 
 %%%%%%%%%%%%%%%%%%%%% to do next:
-%    - Higher resolution BL profile
+%    - Higher resolution BL profile: done
 %    - centerline pressure in stacked subplot
-%    - full pressure plot (using delaunay triangles or whatever)
+%    - full pressure plot (using delaunay triangles or whatever): imposs
 
 %% Import data
 
@@ -13,7 +13,7 @@ close all; clc
 %allow user to choose a .dat file to analyse, or for ease of debug, use a
 %pre-entered file
 
-choose = 1;
+choose = 0;
 if choose
 	[file_name, file_path] = uigetfile('..\output .dat files\.dat');
 	file_path = [file_path, file_name];
@@ -35,7 +35,7 @@ n_slices = length(slice_vals);
 slice_col = 1; %slice by x values
 sliced_data = slice_data(data, slice_col, slice_vals);
 
-n_high_res = 100;
+n_high_res = 80;
 [high_res_x_slice, high_res_slice_vals] = slice_data(data, 1, {[0 10], n_high_res});
 
 %% Flow-wise quantity extraction
@@ -55,12 +55,7 @@ lower_wall = upper_wall;
 
 for h = 1:n_high_res
 	x_slice = high_res_x_slice(h,:);
-	
-	x = cell2mat(x_slice(1));
-	y = cell2mat(x_slice(2));
-	u = cell2mat(x_slice(3));
-	v = cell2mat(x_slice(4));
-	p = cell2mat(x_slice(5));
+	[ x, y, u, v, p ] = cell_2_vector(x_slice);
 	
 	upper_wall(h) = max(y);
 	lower_wall(h) = min(y);
@@ -87,8 +82,18 @@ fill([high_res_slice_vals, abs(10-x_corner)],[upper_wall;  y_corner],[0.5 0.5 0.
 text(4,y_corner-0.1,file_string, 'Interpreter', 'none')
 
 %plot the boundary layer profiles
-plot(high_res_slice_vals, smoothdata(upper_BL),'m')
-plot(high_res_slice_vals, smoothdata(lower_BL),'m')
+smoothing_edge = round(n_high_res*0.1);
+plot(high_res_slice_vals, upper_BL,'m')
+plot(high_res_slice_vals, lower_BL,'m')
+
+%write bl thickness to file
+BL_thickness = upper_wall - upper_BL;
+file_ID = fopen([file_string, ' BL thickness.txt'],'w');
+fprintf(file_ID,'%f\r\n', BL_thickness);
+fclose(file_ID);
+
+
+
 
 
 %% Span-wise analysis 
@@ -96,52 +101,15 @@ plot(high_res_slice_vals, smoothdata(lower_BL),'m')
 for j = 1:n_slices-1
 	x_slice = sliced_data(j,:);
 	
-	
-	x = cell2mat(x_slice(1));
-	y = cell2mat(x_slice(2));
-	u = cell2mat(x_slice(3));
-	v = cell2mat(x_slice(4));
-	p = cell2mat(x_slice(5));
-	
+	[ x, y, u, v, p ] = cell_2_vector(x_slice);
 	
 	%Plotting velocity profile
  	plot(x+u/4,y,'r')
 	plot(x,y ,'b')
 	quiver(x,y,u/4,zeros(size(u)),'b','MaxHeadSize',0.1,'AutoScale', 'off')
 		
-	% 2 axis slicing section
-	%{
-	% re slice in the y direction
-	n_y_slices = 30;
-	y_slices = slice_data(x_slice,2,{[1,length(x_slice{1})], n_y_slices});
 
-	
-	
-	for k = 1:n_y_slices-1
-		y_slice = y_slices(k,:);
-		
-		x = cell2mat(y_slice(1));
-		y = cell2mat(y_slice(2));
-		u = cell2mat(y_slice(3));
-		v = cell2mat(y_slice(4));
-		p = cell2mat(y_slice(5));
-		
-		%Plotting velocity profile
-		quiver(x,y,u/4,zeros(size(u)),'b','MaxHeadSize',0.1,'AutoScale', 'off')
-		
-	end
-	%}
-	
 end
 
 
-%% pressure plotting
-
-
-% figure
-% image(data{1},data{2},data{5})
-
-
-
-%}
-%%%%%%%% Should try streamslice function on full data set
+fclose all;
