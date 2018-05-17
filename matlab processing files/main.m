@@ -13,7 +13,7 @@ close all; clc
 %allow user to choose a .dat file to analyse, or for ease of debug, use a
 %pre-entered file
 
-choose = 0;
+choose = 1;
 if choose
 	[file_name, file_path] = uigetfile('..\output .dat files\.dat');
 	file_path = [file_path, file_name];
@@ -47,21 +47,28 @@ set(gca,'XAxisLocation','origin')
 set(gca,'Visible','off')
 
 
-upper_BL = zeros(n_high_res,1);
-lower_BL = upper_BL;
+lower_BL = zeros(n_high_res,1);
+lower_BL = lower_BL;
 
 upper_wall = zeros(n_high_res,1);
 lower_wall = upper_wall;
+
+streamwise_pressure = upper_wall;
 
 for h = 1:n_high_res
 	x_slice = high_res_x_slice(h,:);
 	[ x, y, u, v, p ] = cell_2_vector(x_slice);
 	
+	%Get wall arrays
 	upper_wall(h) = max(y);
 	lower_wall(h) = min(y);
 	
-	upper_BL(h) = get_BL_height(y,u);
-	lower_BL(h) = -upper_BL(h);
+	%Get BL arrays
+	lower_BL(h) = get_BL_height(y,u);
+	upper_BL(h) = -lower_BL(h);
+
+	%Get centreline pressure
+	streamwise_pressure(h) = p(round(end/2));
 end
 
 %plot wall lines
@@ -83,11 +90,11 @@ text(4,y_corner-0.1,file_string, 'Interpreter', 'none')
 
 %plot the boundary layer profiles
 smoothing_edge = round(n_high_res*0.1);
-plot(high_res_slice_vals, upper_BL,'m')
 plot(high_res_slice_vals, lower_BL,'m')
+plot(high_res_slice_vals, upper_BL,'m')
 
 %write bl thickness to file
-BL_thickness = upper_wall - upper_BL;
+BL_thickness = upper_wall - upper_BL';
 file_ID = fopen([file_string, ' BL thickness.txt'],'w');
 fprintf(file_ID,'%f\r\n', BL_thickness);
 fclose(file_ID);
@@ -110,6 +117,15 @@ for j = 1:n_slices-1
 		
 
 end
+
+pressure_fig = figure;
+
+plot(high_res_slice_vals, streamwise_pressure);
+title('streamwise pressure')
+xlabel('x')
+ylabel('y')
+
+
 
 
 fclose all;
